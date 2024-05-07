@@ -19,6 +19,22 @@ barcode11	4xCad	1	dHisCcadillacP4xD4x	query.fa
 barcode12	4xCad	2	dHisCcadillacP4xD4x	query.fa
 barcode10	6xCad	1	dHisCcadillacP6xD6x	query.fa
 ```
+Explanation for each column:
+1. **sampleDirectory:** The directory containing the FASTQ files.
+   1. At the moment, the pipeline assumes all FASTQ files are .fastq.gz files.
+2. **sampleName:** A short, easy, and unique (if required) identifier for the sample.
+3. **rep:** The replicate number for the sample.
+   1. By default replicates are combined.
+4. **refGenome:** The reference genome (usually the small transgenic locus) to align the reads to.
+   1. This refGenome name must match the refGenome name in the `config.json` file.
+   2. To change the `Default Genome` (the entire genome) edit the `config.json` file.
+5. **querySites:** The FASTA file containing the sites to be used as anchors for the alignment.
+	1. This FASTA file must be multiple 40-50 bp sequences, each of unique sequence flanking repeat regions.
+
+**Note:** Each row indicates a different experiment (i.e. "barcode11" is a folder holding FASTQ files from a single run).
+Each row can have different values for each column, or the same values. These determine how the files in the `sampleDirectory` are processed.
+
+
 
 Set desired default genome (the entire genome) and reference genome (transgenic locus)  `config.json` ([see below](#config)). Set multiple genomes by passing as an array (e.g. `["dm6", "droYak2"]`).
 
