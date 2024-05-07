@@ -1,0 +1,32 @@
+{
+  "sampleInfo" : "sampleInfo.tsv",
+  "sampleDirs" : "sampleDirectory",
+  "baseNameCols": ["sampleName", "rep"],
+  "defaultGenome": "dm6_mt_wMel",
+  "refGenome": "dHisCcadillacP4xD4x",
+  "querySites": "querySites",
+  "genome" : {
+    "dm6_mt_wMel" : {
+      "fasta" : "dm6_mt_wMel.fa",
+      "chromSize" : "dm6_mt_wMel.chrom.sizes",
+      "chromosomes" : ["chr2L", "chr2R", "chr3L", "chr3R", "chr4", "chrM", "chrX", "chrY", "chrM", "wMel"],
+      "genomeSize" : 138835257
+    },
+    "dHisCcadillacP4xD4x" : {
+      "fasta" : "dHisCcadillacP4xD4x.fa"
+    }
+  },
+  "module" : {
+    "samtoolsVer": "samtools/1.20",
+    "seqtkVer": "seqtk/1.3-r106",
+    "seqkitVer": "seqkit/2.3.0",
+    "medakaVer": "medaka/1.7.2",
+    "nanopackVer": "nanopack/1.1.0",
+    "minimap2Ver": "minimap2/2.26",
+    "blatVer": "blat/36",
+    "fqscreenPath" : "/proj/mckaylab/genomeFiles/fastq_screen_v0.11.1/fastq_screen",
+    "fqscreenConf" : "./src/fastq_screen.conf",
+    "pythonVer" : "python/3.5.1",
+    "rVer": "r/4.3.2"
+  }
+}
