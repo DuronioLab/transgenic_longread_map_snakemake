@@ -4,7 +4,7 @@ import sys
 from src import preProcessSampleConfig as pre
 
 #import the config.json file as config
-with open('./src/config.json') as json_data:
+with open('config.json') as json_data:
     config = json.load(json_data)
 
 file_info_path = config['sampleInfo']
@@ -46,7 +46,7 @@ for genome in genomeList:
     genome_bam = genome + '_bam'
     sampleSheet[
         genome_bam] = expand("Bam/{concat_sample}_{genome}.{fileType}",concat_sample=sampleSheet.concat,genome=genome,fileType='bam')
-        
+
 
 
 #save sampleSheet as a text file in the working directory

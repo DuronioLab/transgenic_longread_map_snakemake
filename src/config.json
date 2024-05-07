@@ -8,9 +8,6 @@
   "genome" : {
     "dm6_mt_wMel" : {
       "fasta" : "dm6_mt_wMel.fasta",
-      "chromSize" : "dm6_mt_wMel.chrom.sizes",
-      "chromosomes" : ["chr2L", "chr2R", "chr3L", "chr3R", "chr4", "chrM", "chrX", "chrY", "chrM", "wMel"],
-      "genomeSize" : 138835257
     },
     "dHisCcadillacP4xD4x" : {
       "fasta" : "dHisC_Cadillac_D4x_P4x.fa"
