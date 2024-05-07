@@ -5,7 +5,8 @@
 
 Clone pipeline (Current stable version: v1.7.2)
 ```
-git clone https://github.com/markus-nevil/transgenic_longread_map_snakemake.git --depth 1 && cd cutNrun-pipeline/ && rm -rf .git
+git clone https://github.com/username/transgenic_longread_map_snakemake.git && mv transgenic_longread_map_snakemake/* . && rm -rf transgenic_longread_map_snakemake
+
 ```
 
 Create `sampleInfo.tsv` ([see below](#sampleInfo)) with descriptive columns of data.
