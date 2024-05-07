@@ -3,5 +3,35 @@
     "time": "30:00",
     "threads": "1",
     "mem": "8G"
-  }
+  },
+  	"nanoplot" :
+	{
+		"mem" : "8G",
+		"threads" : "1",
+		"time" : "30:00"
+	},
+ 	"fqscreen" :
+	{
+		"mem" : "8G",
+		"threads" : "1",
+		"time" : "30:00"
+	},
+ 	"align" :
+	{
+		"mem" : "16G",
+		"threads" : "2",
+		"time" : "3:00:00"
+	},
+ 	"chrom_graph" :
+	{
+		"mem" : "8G",
+		"threads" : "1",
+		"time" : "30:00"
+	},
+ 	"query_align" :
+	{
+		"mem" : "16G",
+		"threads" : "1",
+		"time" : "1:00:00"
+	}
 }
