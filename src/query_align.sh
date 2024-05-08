@@ -20,12 +20,12 @@ do
     cat output.psl >> all_results.psl
 done
 
-awk 'NR > 6 print $14' all_results.psl > temp_names.txt
+awk 'NR > 6 {print $14}' all_results.psl > temp_names.txt
 sort temp_names.txt | uniq > blat_names.txt
 
 readarray -t File < blat_names.txt
 touch filtered_reads.fasta
-for f in "$File[@]"
+for f in "${File[@]}"
 do
   echo $f > fname.txt
   seqkit grep --quiet -n -f fname.txt out.fasta >> filtered_reads.fasta

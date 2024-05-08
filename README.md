@@ -16,9 +16,9 @@ Ensure that the FASTA file with sites to be used as anchors is named properly in
 
 ```
 sampleDirectory	sampleName	rep	refGenome	querySites
-barcode11	4xCad	1	dHisCcadillacP4xD4x	query.fa
-barcode12	4xCad	2	dHisCcadillacP4xD4x	query.fa
-barcode10	6xCad	1	dHisCcadillacP6xD6x	query.fa
+barcode11	4xCad	1	dHisC_Cadillac_D4x_P4x	query.fa
+barcode12	4xCad	2	dHisC_Cadillac_D4x_P4x	query.fa
+barcode10	6xCad	1	dHisC_Cadillac_D6x_P6x	query.fa
 ```
 Explanation for each column:
 1. **sampleDirectory:** The directory containing the FASTQ files.
@@ -47,13 +47,13 @@ Include the file names for the genomes in the `genome` section of `config.json`.
   "sampleDirs" : "sampleDirectory",
   "baseNameCols": ["sampleName", "rep"],
   "defaultGenome": "dm6_mt_wMel",
-  "refGenome": "dHisCcadillacP4xD4x",
+  "refGenome": "dHisC_Cadillac_D4x_P4x",
   "querySites": "querySites",
   "genome" : {
 	"dm6_mt_wMel" : {
 	  "fasta" : "dm6_mt_wMel.fasta",
 	},
-	"dHisCcadillacP4xD4x" : {
+	"dHisC_Cadillac_D4x_P4x" : {
 	  "fasta" : "dHisC_Cadillac_D4x_P4x.fa"
 	}
   }
@@ -61,9 +61,15 @@ Include the file names for the genomes in the `genome` section of `config.json`.
 
 Edit `slurmConfig.json` to configure default parameters if necessary.
 
-Load python on Longleaf with `module load python`
+Load python on Longleaf with:
+```
+module load python
+```
 
-Start the submission with `sh slurmSubmission.sh`
+Start the pipeline submission with:
+```
+sh slurmSubmission.sh
+```
 
 ## Required files and directory structure
 
@@ -88,6 +94,26 @@ Project_Folder/
 └── README.md
 ```
 You may copy or move your raw data folders into the `Project_Folder` directory.
+
+## Expected Output
+
+1. **Alignment files:** The aligned reads in BAM and SAM format.
+   1. Alignment/[SampleName]_[DefaultGenome(s)].sam
+   2. Alignment/[SampleName]_[DefaultGenome(s)].bam
+   3. Alignment/[SampleName]_[DefaultGenome(s)].bam.bai
+   4. Alignment/[SampleName]_[ReferenceGenome(s)].sam
+   5. Alignment/[SampleName]_[ReferenceGenome(s)].bam
+   6. Alignment/[SampleName]_[ReferenceGenome(s)].bam.bai
+   
+
+2. **Stats files:** Stats about the sequencing and alignments.
+   1. Stats/[SampleName]\_concat\_[DefaultGenome(s)]readDepth.pdf
+   2. Stats/NanoPlot-report_[SampleName]_concat.html
+   3. Stats/[SampleName]\_concat\_screen.html
+
+
+3. **Consensus sequence:** The consensus sequence of the aligned reads to the Reference Genome(s).
+   1. Consensus/[SampleName]_[ReferenceGenome(s)].fasta
 
 ## Getting your data to UNC Longleaf
 
