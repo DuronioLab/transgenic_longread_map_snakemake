@@ -3,13 +3,13 @@
   "sampleDirs" : "sampleDirectory",
   "baseNameCols": ["sampleName", "rep"],
   "defaultGenome": "dm6_mt_wMel",
-  "refGenome": "dHisCcadillacP4xD4x",
+  "refGenome": "dHisC_Cadillac_D4x_P4x",
   "querySites": "querySites",
   "genome" : {
     "dm6_mt_wMel" : {
-      "fasta" : "dm6_mt_wMel.fasta",
+      "fasta" : "dm6_mt_wMel.fasta"
     },
-    "dHisCcadillacP4xD4x" : {
+    "dHisC_Cadillac_D4x_P4x" : {
       "fasta" : "dHisC_Cadillac_D4x_P4x.fa"
     }
   },

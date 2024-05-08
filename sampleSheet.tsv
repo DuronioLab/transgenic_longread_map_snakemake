@@ -1,5 +1,0 @@
-sampleDirectory	sampleName	rep	refGenome	querySites	baseName	concat	concat_fastq	dHisCcadillacP4xD4x_bam	dm6_mt_wMel_bam
-barcode11	4xCad	1	dHisCcadillacP4xD4x	query.fa	4xCad-1	4xCad_concat	Fastq/4xCad_concat.fastq	Bam/4xCad_concat_dHisCcadillacP4xD4x.bam	Bam/4xCad_concat_dm6_mt_wMel.bam
-barcode01	4xCad	2	dHisCcadillacP4xD4x	query.fa	4xCad-2	4xCad_concat	Fastq/4xCad_concat.fastq	Bam/4xCad_concat_dHisCcadillacP4xD4x.bam	Bam/4xCad_concat_dm6_mt_wMel.bam
-barcode10	4xCad_as	1	dHisCcadillacP4xD4x	query.fa	4xCad_as-1	4xCad_as_concat	Fastq/4xCad_as_concat.fastq	Bam/4xCad_as_concat_dHisCcadillacP4xD4x.bam	Bam/4xCad_as_concat_dm6_mt_wMel.bam
-barcode12	6xCad	1	dHisCcadillacP4xD4x	query.fa	6xCad-1	6xCad_concat	Fastq/6xCad_concat.fastq	Bam/6xCad_concat_dHisCcadillacP4xD4x.bam	Bam/6xCad_concat_dm6_mt_wMel.bam

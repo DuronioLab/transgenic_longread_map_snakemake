@@ -1,5 +1,4 @@
 sampleDirectory	sampleName	rep	refGenome	querySites
-barcode11	4xCad	1	dHisCcadillacP4xD4x	query.fa
-barcode01	4xCad	2	dHisCcadillacP4xD4x	query.fa
-barcode10	4xCad_as	1	dHisCcadillacP4xD4x	query.fa
-barcode12	6xCad	1	dHisCcadillacP4xD4x	query.fa
+barcode11	4xCad	1	dHisC_Cadillac_D4x_P4x	query.fasta
+barcode10	4xCad	2	dHisC_Cadillac_D4x_P4x	query.fasta
+barcode12	4xCad	3	dHisC_Cadillac_D4x_P4x	query.fasta

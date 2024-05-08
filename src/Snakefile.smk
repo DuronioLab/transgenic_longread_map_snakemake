@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-from src import preProcessSampleConfig as pre
+import preProcessSampleConfig as pre
 
 #import the config.json file as config
 with open('./src/config.json') as json_data:
@@ -12,8 +12,8 @@ basename_columns = config['baseNameCols']
 
 REFGENOME = config['refGenome']
 DEFAULTGENOME = config['defaultGenome']
-chromSize_Path = config['genome'][DEFAULTGENOME]['chromSize']
-genomeSize = config['genome'][DEFAULTGENOME]['genomeSize']
+#chromSize_Path = config['genome'][DEFAULTGENOME]['chromSize']
+#genomeSize = config['genome'][DEFAULTGENOME]['genomeSize']
 
 modules = config['module']
 
