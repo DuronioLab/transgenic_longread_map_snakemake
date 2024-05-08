@@ -3,7 +3,7 @@
 
 ## Quick Start:
 
-Clone pipeline (Current stable version: v1.7.2)
+Clone pipeline
 ```
 git clone https://github.com/markus-nevil/transgenic_longread_map_snakemake.git && mv transgenic_longread_map_snakemake/* . && rm -rf transgenic_longread_map_snakemake
 
@@ -88,5 +88,8 @@ Project_Folder/
 └── README.md
 ```
 You may copy or move your raw data folders into the `Project_Folder` directory.
+
+## Acknowledgements
+The pipeline is based on the [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow management system and the Snakemake pipelines written by Spencer Nystrom and Chris Uyehara.
 
 
