@@ -5,7 +5,7 @@
 
 Clone pipeline (Current stable version: v1.7.2)
 ```
-git clone https://github.com/username/transgenic_longread_map_snakemake.git && mv transgenic_longread_map_snakemake/* . && rm -rf transgenic_longread_map_snakemake
+git clone https://github.com/markus-nevil/transgenic_longread_map_snakemake.git && mv transgenic_longread_map_snakemake/* . && rm -rf transgenic_longread_map_snakemake
 
 ```
 

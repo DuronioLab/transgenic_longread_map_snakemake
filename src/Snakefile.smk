@@ -4,7 +4,7 @@ import sys
 from src import preProcessSampleConfig as pre
 
 #import the config.json file as config
-with open('config.json') as json_data:
+with open('./src/config.json') as json_data:
     config = json.load(json_data)
 
 file_info_path = config['sampleInfo']
