@@ -89,6 +89,40 @@ Project_Folder/
 ```
 You may copy or move your raw data folders into the `Project_Folder` directory.
 
+## Getting your data to UNC Longleaf
+
+### Set up Globus on your computer (only needs to be done once!).
+
+Via [this guide](https://docs.globus.org/globus-connect-personal/install/), download [Globus Personal Connect](https://app.globus.org/collections/gcp) onto your computer.
+
+After installation and configuration with your UNC account, follow the appropriate instructions ([Windows](https://docs.globus.org/globus-connect-personal/install/windows/#configuration), [Mac](https://docs.globus.org/globus-connect-personal/install/mac/#configuration))
+to set up a shared folder on your computer. This is required to move files to-and-from different "endpoints".
+
+Set up any personal shared folders you may want (your home directory is default), but also connect to Pierre and make your Pierre folder shared as well.
+
+This can also include a removable usb drive, but the drive must be connected for data to transfer.
+
+### Moving data from the GridIon to a safe location.
+
+Connect to Pierre or your removable usb drive on your computer. Ensure Globus Personal Connect is running (it may not show up as it silently works in the background).
+
+Go to the GridIon machine and navigate to the Globus online interface. Log in with your UNC account. Use the web interface to upload the read folders to Pierre or removable drive using the Globus `File Manager`.
+
+You can verify that the transfer has completed on the web interface (don't close until completed!) and on the location you've moved the files.
+
+### Moving data from a safe location to Longleaf.
+
+Connect to Pierre or your removable usb drive on your computer. Ensure Globus Personal Connect is running (it may not show up as it silently works in the background).
+
+Navigate to the Globus online interface and log in with your UNC account.
+
+Using the web interface `File Manager`, connect to the `UNC, Research Computing DataMover` collection endpoint. On the second pane, connect to your Pierre or drive endpoint.
+
+Using the `path` field, navigate to the folders you wish to move data to/from. For Longleaf, usually you will move data to `/work/users/u/s/username/Project_Folder` where `Project_Folder` is a new folder where you will run the pipeline.
+
+Select the folders/files that you want to transfer to Longleaf and click the `Start` button.
+
+
 ## Acknowledgements
 The pipeline is based on the [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow management system and the Snakemake pipelines written by Spencer Nystrom and Chris Uyehara.
 
