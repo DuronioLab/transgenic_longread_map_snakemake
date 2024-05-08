@@ -45,7 +45,7 @@ sampleSheet['concat_fastq'] = expand("Fastq/{sample}_concat.fastq",sample=sample
 for genome in genomeList:
     genome_bam = genome + '_bam'
     sampleSheet[
-        genome_bam] = expand("Bam/{concat_sample}_{genome}.{fileType}",concat_sample=sampleSheet.concat,genome=genome,fileType='bam')
+        genome_bam] = expand("Alignment/{concat_sample}_{genome}.{fileType}",concat_sample=sampleSheet.concat,genome=genome,fileType='bam')
 
 
 
@@ -61,11 +61,11 @@ sampleSheet.to_csv('sampleSheet.tsv',sep="\t",index=False)
 rule all:
     input:
         expand("Fastq/{sample}_concat.fastq",sample=set(sampleSheet.sampleName)),
-        expand("NanoPlot/NanoPlot-report_{concat_sample}.html",concat_sample=set(sampleSheet.concat)),
-        expand("FQScreen/{concat_sample}_screen.html",concat_sample=set(sampleSheet.concat)),
-        expand("Bam/{concat_sample}_{genome}.{fileType}",concat_sample=set(sampleSheet.concat),genome=genomeList,fileType=[
+        expand("Stats/NanoPlot-report_{concat_sample}.html",concat_sample=set(sampleSheet.concat)),
+        expand("Stats/{concat_sample}_screen.html",concat_sample=set(sampleSheet.concat)),
+        expand("Alignment/{concat_sample}_{genome}.{fileType}",concat_sample=set(sampleSheet.concat),genome=genomeList,fileType=[
             'bam', 'sam']),
-        expand("Bam/{concat_sample}_{genome}.bam.bai",concat_sample=set(sampleSheet.concat),genome=genomeList),
+        expand("Alignment/{concat_sample}_{genome}.bam.bai",concat_sample=set(sampleSheet.concat),genome=genomeList),
         expand("Stats/{concat_sample}_{genome}readDepth.pdf",concat_sample=set(sampleSheet.concat),genome=DEFAULTGENOME),
 
 #expand("Medaka/{concat_sample}_consensus.bam", concat_sample=sampleSheet.concat)
@@ -89,20 +89,21 @@ rule nanoplot:
     input:
         fastq=expand("Fastq/{concat_sample}.fastq",concat_sample=set(sampleSheet.concat))
     output:
-        html=expand("NanoPlot/NanoPlot-report_{concat_sample}.html", concat_sample=set(sampleSheet.concat))
+        html=expand("Stats/NanoPlot-report_{concat_sample}.html", concat_sample=set(sampleSheet.concat))
     envmodules:
         modules['nanopackVer']
     shell:
         """
         NanoPlot --fastq_rich {input.fastq} --N50 -o NanoPlot
         mv NanoPlot/NanoPlot-report.html {output.html}
+        rm -r NanoPlot
         """
 
 rule fqscreen:
     input:
         fastq=expand("Fastq/{concat_sample}.fastq",concat_sample=set(sampleSheet.concat))
     output:
-        html="FQScreen/{concat_sample}_screen.html"
+        html="Stats/{concat_sample}_screen.html"
     envmodules:
         modules['seqkitVer']
     params:
@@ -120,9 +121,9 @@ rule align:
     input:
         fastq=expand("Fastq/{concat_sample}.fastq",concat_sample=set(sampleSheet.concat))
     output:
-        sam=expand("Bam/{concat_sample}_{genome}.sam",concat_sample=set(sampleSheet.concat),genome=DEFAULTGENOME),
-        bam=expand("Bam/{concat_sample}_{genome}.bam",concat_sample=set(sampleSheet.concat),genome=DEFAULTGENOME),
-        bamIndex=expand("Bam/{concat_sample}_{genome}.bam.bai",concat_sample=set(sampleSheet.concat),genome=DEFAULTGENOME)
+        sam=expand("Alignment/{concat_sample}_{genome}.sam",concat_sample=set(sampleSheet.concat),genome=DEFAULTGENOME),
+        bam=expand("Alignment/{concat_sample}_{genome}.bam",concat_sample=set(sampleSheet.concat),genome=DEFAULTGENOME),
+        bamIndex=expand("Alignment/{concat_sample}_{genome}.bam.bai",concat_sample=set(sampleSheet.concat),genome=DEFAULTGENOME)
     envmodules:
         modules['minimap2Ver'],
         modules['samtoolsVer']
@@ -138,7 +139,7 @@ rule align:
 
 rule chrom_graph:
     input:
-        expand("Bam/{concat_sample}_{genome}.bam",concat_sample=set(sampleSheet.concat),genome=DEFAULTGENOME)
+        expand("Alignment/{concat_sample}_{genome}.bam",concat_sample=set(sampleSheet.concat),genome=DEFAULTGENOME)
     output:
         expand("Stats/{concat_sample}_{genome}readDepth.pdf",concat_sample=set(sampleSheet.concat),genome=DEFAULTGENOME)
     envmodules:
@@ -153,9 +154,9 @@ rule query_align:
         fastq=expand("Fastq/{concat_sample}.fastq",concat_sample=set(sampleSheet.concat)),
         fasta=[config['genome'][genome]['fasta'] for genome in REFGENOME]
     output:
-        sam=expand("Bam/{concat_sample}_{genome}.sam",concat_sample=set(sampleSheet.concat),genome=REFGENOME),
-        bam=expand("Bam/{concat_sample}_{genome}.bam",concat_sample=set(sampleSheet.concat),genome=REFGENOME),
-        bamIndex=expand("Bam/{concat_sample}_{genome}.bam.bai",concat_sample=set(sampleSheet.concat),genome=REFGENOME)
+        sam=expand("Alignment/{concat_sample}_{genome}.sam",concat_sample=set(sampleSheet.concat),genome=REFGENOME),
+        bam=expand("Alignment/{concat_sample}_{genome}.bam",concat_sample=set(sampleSheet.concat),genome=REFGENOME),
+        bamIndex=expand("Alignment/{concat_sample}_{genome}.bam.bai",concat_sample=set(sampleSheet.concat),genome=REFGENOME)
     envmodules:
         modules['samtoolsVer'],
         modules['blatVer'],

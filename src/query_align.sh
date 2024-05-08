@@ -38,3 +38,13 @@ minimap2 --secondary=no --sam-hit-only -ax map-ont $fasta filtered_reads.fastq >
 samtools sort $output_sam -o mapped.bam
 samtools view -bq 1 mapped.bam > $output_bam
 samtools index $output_bam
+
+rm out.*
+rm mapped.bam
+rm filtered_reads.fast*
+rm fname.txt
+rm temp_names.txt
+rm all_results.psl
+rm blat_names.txt
+rm output.psl
+rm renamed_reads.fastq
