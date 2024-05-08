@@ -96,7 +96,7 @@ rule nanoplot:
         """
         NanoPlot --fastq_rich {input.fastq} --N50 -o NanoPlot
         mv NanoPlot/NanoPlot-report.html {output.html}
-        rm -r NanoPlot
+        rm -rf NanoPlot
         """
 
 rule fqscreen:
