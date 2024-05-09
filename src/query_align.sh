@@ -5,7 +5,8 @@ input_fastq=$1
 fasta=$2
 output_sam=$3
 output_bam=$4
-filtered_fasta=$5
+query=$5
+filtered_fasta=$6
 
 seqkit replace --quiet -p .+ -r "seq_{nr}" $input_fastq > renamed_reads.fastq
 seqkit seq --quiet --min-len 5000 renamed_reads.fastq -o out.fastq
@@ -17,7 +18,7 @@ touch all_results.psl
 
 for fasta_file in out.*.fasta
 do
-    blat "$fasta_file" query.fasta -oneOff=3 -noHead output.psl
+    blat "$fasta_file" $query -oneOff=3 -noHead output.psl
     cat output.psl >> all_results.psl
 done
 
