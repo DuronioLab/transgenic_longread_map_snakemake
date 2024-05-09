@@ -170,7 +170,7 @@ rule query_align:
         query="query.fasta"
     shell:
         """
-        bash ./src/query_align.sh {input.fastq} {input.fasta} {output.sam} {output.bam} {params.query}
+        bash ./src/query_align.sh {input.fastq} {input.fasta} {output.sam} {output.bam} {params.query} {output.filteredFasta}
         """
 
 rule consensus:
