@@ -1,6 +1,29 @@
 # Cadillac locus long read sequencing
 ## Author: Markus Nevil
 
+**Table of Contents**
+- [Introduction](#introduction)
+- [Quick Start](#quick-start)
+- [Required files](#required-files)
+   - [query.fa](#query)
+   - [sampleInfo.tsv](#sampleInfo)
+   - [config.json](#config)
+- [Required directory structure](#required-directory-structure)
+- [Expected Output](#expected-output)
+- [Getting your data to UNC Longleaf](#getting-your-data-to-unc-longleaf)
+   - [Set up Globus on your computer](#set-up-globus-on-your-computer-only-needs-to-be-done-once)
+   - [Moving data from the GridIon](#moving-data-from-the-gridion-to-a-safe-location)
+   - [Moving data to Longleaf](#moving-data-from-a-safe-location-to-longleaf)
+- [Acknowledgements](#acknowledgements)
+
+## Introduction:
+This pipeline is designed to take whole-genome long-read sequencing data from an Oxford Nanopore sequencer to perform QC steps and align the reads. 
+The alignment is done to one-or-more "default genomes", as well as an "anchored" alignment to one-or-more "reference genomes" which are small regions of interest, likely ones with transgenic insertions.
+The "anchoring" step is done to ensure that the reads aligned to the transgenic region maintains the structure of the locus. Specficially this is designed with
+transgenic histone gene arrays in mind, where traditional methods of alignment fail due to the repetitive nature of the transgenic histone
+gene locus. The pipeline is designed to be run on the UNC Longleaf cluster, but can be run on any system with Snakemake and the 
+appropriate programs installed.
+
 ## Quick Start:
 
 Clone pipeline
@@ -8,8 +31,40 @@ Clone pipeline
 git clone https://github.com/markus-nevil/transgenic_longread_map_snakemake.git && mv transgenic_longread_map_snakemake/* . && rm -rf transgenic_longread_map_snakemake
 
 ```
+**Required:** Add/edit the `query.fa` file with the sites to be used as anchors for the alignment ([see below](#query)).
 
-Create `sampleInfo.tsv` ([see below](#sampleInfo)) with descriptive columns of data.
+**Required:** Edit `sampleInfo.tsv` to include the sample information ([see below](#sampleInfo)).
+
+**Required:** Edit `config.json` to include the reference genome(s) and default genome ([see below](#config)).
+
+**Optional:** Edit `slurmConfig.json` to configure default parameters if necessary.
+
+Load python on Longleaf with:
+```
+module load python
+```
+
+Start the pipeline submission with:
+```
+sh slurmSubmission.sh
+```
+## Required files
+
+### query
+
+The query.fa (or query.fasta) is a FASTA file that contains the sites to be used as anchors for the alignment. This file should contain multiple 40-50 bp sequences, each of unique sequence flanking repeat regions.
+
+```
+>site1
+ACGTACTCTGCTACTCTGACCCCATACGACAC
+>GFP_promoter
+CCCATAGGAAATCATATCGGATCTAGCGACAC
+>my_gene
+AAACATATATAATACCGCGATCGCGATAATGA
+```
+
+### sampleInfo
+
 **Note:** Paths are relative to the location of the `sampleInfo.tsv` file.
 
 Ensure that the FASTA file with sites to be used as anchors is named properly in the `querySites` column.
@@ -35,11 +90,12 @@ Explanation for each column:
 **Note:** Each row indicates a different experiment (i.e. "barcode11" is a folder holding FASTQ files from a single run).
 Each row can have different values for each column, or the same values. These determine how the files in the `sampleDirectory` are processed.
 
+### config
+The `config.json` file contains the configuration for the pipeline and is found in the `src` directory.
 
+Edit the `defaultGenome` and `refGenome` fields to match the names of your entire genome(s) and reference of your transgenic locus/loci respectively.
 
-Set desired default genome (the entire genome) and reference genome (transgenic locus)  `config.json` ([see below](#config)). Set multiple genomes by passing as an array (e.g. `["dm6", "droYak2"]`).
-
-Include the file names for the genomes in the `genome` section of `config.json`.
+Ensure that `genome` has an entry for each `defaultGenome` and `refGenome`, and each has an entry for the `fasta` file.
 
 ```
 {
@@ -50,30 +106,19 @@ Include the file names for the genomes in the `genome` section of `config.json`.
   "refGenome": "dHisC_Cadillac_D4x_P4x",
   "querySites": "querySites",
   "genome" : {
-	"dm6_mt_wMel" : {
-	  "fasta" : "dm6_mt_wMel.fasta",
-	},
-	"dHisC_Cadillac_D4x_P4x" : {
-	  "fasta" : "dHisC_Cadillac_D4x_P4x.fa"
-	}
+    "dm6_mt_wMel" : {
+      "fasta" : "dm6_mt_wMel.fasta",
+    },
+    "dHisC_Cadillac_D4x_P4x" : {
+      "fasta" : "dHisC_Cadillac_D4x_P4x.fa"
+    }
   }
 ```
 
-Edit `slurmConfig.json` to configure default parameters if necessary.
+## Required directory structure
 
-Load python on Longleaf with:
-```
-module load python
-```
-
-Start the pipeline submission with:
-```
-sh slurmSubmission.sh
-```
-
-## Required files and directory structure
-
-After cloning the repository, and placing your own `Default Genome` and `Reference Genome` in the `config.json` file, the directory should look like:
+After cloning the repository, and placing your own `Default Genome` and `Reference Genome` in the `Project_Folder` directory, you should
+expect this structure:
 
 ```
 Project_Folder/

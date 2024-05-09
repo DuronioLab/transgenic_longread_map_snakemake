@@ -96,7 +96,7 @@ rule nanoplot:
         """
         NanoPlot --fastq_rich {input.fastq} --N50 -o NanoPlot
         mv NanoPlot/NanoPlot-report.html {output.html}
-        rm -rf NanoPlot
+        rm -R -f NanoPlot
         """
 
 rule fqscreen:
@@ -169,3 +169,17 @@ rule query_align:
         """
         bash ./src/query_align.sh {input.fastq} {input.fasta} {output.sam} {output.bam} {params.query}
         """
+
+# rule consensus:
+#     input:
+#         bam=expand("Alignment/{concat_sample}_{genome}.bam",concat_sample=set(sampleSheet.concat),genome=REFGENOME)
+#     output:
+#         bam=expand("Medaka/{concat_sample}_consensus.bam",concat_sample=set(sampleSheet.concat))
+#     params:
+#         genome=[config['genome'][genome]['fasta'] for genome in REFGENOME]
+#     envmodules:
+#         modules['medakaVer']
+#     shell:
+#         """
+#         medaka_consensus -i {input.bam} -d {params.genome} -o {output.bam}
+#         """

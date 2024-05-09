@@ -39,4 +39,4 @@ $fqscreenPath --threads $threads --force --aligner bowtie2 --conf $fqscreenConf 
 
 mv ./FQScreen/concat_reduced_100bp_screen.html $6
 rm ./FQScreen/concat_reduced_100bp_screen.txt
-rm -rf ./FQScreen
+rm -R -f ./FQScreen
