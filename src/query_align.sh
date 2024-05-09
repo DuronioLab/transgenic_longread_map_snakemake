@@ -5,6 +5,7 @@ input_fastq=$1
 fasta=$2
 output_sam=$3
 output_bam=$4
+filtered_fasta=$5
 
 seqkit replace --quiet -p .+ -r "seq_{nr}" $input_fastq > renamed_reads.fastq
 seqkit seq --quiet --min-len 5000 renamed_reads.fastq -o out.fastq
@@ -39,9 +40,11 @@ samtools sort $output_sam -o mapped.bam
 samtools view -bq 1 mapped.bam > $output_bam
 samtools index $output_bam
 
+mv filtered_reads.fasta $filtered_fasta
+
 rm out.*
 rm mapped.bam
-rm filtered_reads.fast*
+rm filtered_reads.fastq
 rm fname.txt
 rm temp_names.txt
 rm all_results.psl

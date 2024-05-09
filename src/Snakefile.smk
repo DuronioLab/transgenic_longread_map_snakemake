@@ -67,6 +67,8 @@ rule all:
             'bam', 'sam']),
         expand("Alignment/{concat_sample}_{genome}.bam.bai",concat_sample=set(sampleSheet.concat),genome=genomeList),
         expand("Stats/{concat_sample}_{genome}readDepth.pdf",concat_sample=set(sampleSheet.concat),genome=DEFAULTGENOME),
+        expand("Medaka/{concat_sample}_consensus.bam", concat_sample=set(sampleSheet.concat)),
+        expand("Medaka/{concat_sample}_consensus.bam.bai", concat_sample=set(sampleSheet.concat))
 
 #expand("Medaka/{concat_sample}_consensus.bam", concat_sample=sampleSheet.concat)
 
@@ -156,7 +158,8 @@ rule query_align:
     output:
         sam=expand("Alignment/{concat_sample}_{genome}.sam",concat_sample=set(sampleSheet.concat),genome=REFGENOME),
         bam=expand("Alignment/{concat_sample}_{genome}.bam",concat_sample=set(sampleSheet.concat),genome=REFGENOME),
-        bamIndex=expand("Alignment/{concat_sample}_{genome}.bam.bai",concat_sample=set(sampleSheet.concat),genome=REFGENOME)
+        bamIndex=expand("Alignment/{concat_sample}_{genome}.bam.bai",concat_sample=set(sampleSheet.concat),genome=REFGENOME),
+        filteredFasta=expand("Alignment/{concat_sample}_{genome}_filtered.fasta",concat_sample=set(sampleSheet.concat),genome=REFGENOME)
     envmodules:
         modules['samtoolsVer'],
         modules['blatVer'],
@@ -170,16 +173,21 @@ rule query_align:
         bash ./src/query_align.sh {input.fastq} {input.fasta} {output.sam} {output.bam} {params.query}
         """
 
-# rule consensus:
-#     input:
-#         bam=expand("Alignment/{concat_sample}_{genome}.bam",concat_sample=set(sampleSheet.concat),genome=REFGENOME)
-#     output:
-#         bam=expand("Medaka/{concat_sample}_consensus.bam",concat_sample=set(sampleSheet.concat))
-#     params:
-#         genome=[config['genome'][genome]['fasta'] for genome in REFGENOME]
-#     envmodules:
-#         modules['medakaVer']
-#     shell:
-#         """
-#         medaka_consensus -i {input.bam} -d {params.genome} -o {output.bam}
-#         """
+rule consensus:
+    input:
+        fasta=expand("Alignment/{concat_sample}_{genome}_filtered.fasta",concat_sample=set(sampleSheet.concat),genome=REFGENOME)
+    output:
+        bam=expand("Medaka/{concat_sample}_consensus.bam",concat_sample=set(sampleSheet.concat)),
+        index=expand("Medaka/{concat_sample}_consensus.bam.bai",concat_sample=set(sampleSheet.concat))
+    params:
+        genome=[config['genome'][genome]['fasta'] for genome in REFGENOME]
+    envmodules:
+        modules['medakaVer']
+    shell:
+        """
+        medaka_consensus -i {input.fasta} -d {params.genome} -o temp_medaka
+        mv ./temp_medaka/calls_to_draft.bam {output.bam}
+        mv ./temp_medaka/calls_to_draft.bam.bai {output.index}
+        rm ./temp_medaka/consensus_probs.hdf
+        rm -R -f temp_medaka
+        """
