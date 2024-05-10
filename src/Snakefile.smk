@@ -23,35 +23,35 @@ modules = config['module']
 # if not, exit the program.
 
 if not os.path.exists(file_info_path):
-    sys.exit('Error: {name} does not exist. Be sure to set `sampleInfo` in config.json.'.format(name=file_info_path))
+    sys.exit('\nError: {name} does not exist. Be sure to set `sampleInfo` in config.json.\n'.format(name=file_info_path))
 
 if type(REFGENOME) is not str:
-    sys.exit('Error: refGenome must be a string. Currently set to: {}. Double check `refGenome` in config.json.'.format(REFGENOME))
+    sys.exit('\nError: refGenome must be a string. Currently set to: {}. Double check `refGenome` in config.json.\n'.format(REFGENOME))
 
 if isinstance(REFGENOME, list):
     for genome in REFGENOME:
         if genome not in config['genome']:
-            sys.exit(f'Error: Your `refGenome` {genome} is not found as an entry in the `genome` section of config.json.')
+            sys.exit('\nError: Your `refGenome` {name} is not found as an entry in the `genome` section of config.json.\n'.format(name=REFGENOME))
 else:
     if REFGENOME not in config['genome']:
-        sys.exit(f'Error: Your `refGenome` {REFGENOME} is not found as an entry in the `genome` section of config.json.')
+        sys.exit('\nError: Your `refGenome` {name} is not found as an entry in the `genome` section of config.json.\n'.format(name=REFGENOME))
 
 if isinstance(DEFAULTGENOME, list):
     for genome in DEFAULTGENOME:
         if genome not in config['genome']:
-            sys.exit(f'Error: Your `defaultGenome` {genome} is not found as an entry in the `genome` section of config.json.')
+            sys.exit('\nError: Your `defaultGenome` is not found as an entry in the `genome` section of config.json.\n')
 else:
     if DEFAULTGENOME not in config['genome']:
-        sys.exit(f'Error: Your `defaultGenome` {DEFAULTGENOME} is not found as an entry in the `genome` section of config.json.')
+        sys.exit('\nError: Your `defaultGenome` is not found as an entry in the `genome` section of config.json.\n')
 
 if not os.path.exists(config['genome'][DEFAULTGENOME]['fasta']):
-    sys.exit('Error: defaultGenome FASTA {name} does not exist. Be sure to set `fasta` in config.json.'.format(name=config['genome'][DEFAULTGENOME]['fasta']))
+    sys.exit('\nError: defaultGenome FASTA {name} does not exist. Be sure to set `fasta` in config.json.\n'.format(name=config['genome'][DEFAULTGENOME]['fasta']))
 
 if not os.path.exists(config['genome'][REFGENOME]['fasta']):
-    sys.exit('Error: The refGenome FASTA {name} does not exist. Be sure to set `fasta` in config.json.'.format(name=config['genome'][REFGENOME]['fasta']))
+    sys.exit('\nError: The refGenome FASTA {name} does not exist. Be sure to set `fasta` in config.json.\n'.format(name=config['genome'][REFGENOME]['fasta']))
 
 if not os.path.exists('query.fa') and not os.path.exists('query.fasta'):
-    sys.exit('Error: query.fa or query.fasta does not exist. Please provide a query fasta file in the working directory.')
+    sys.exit('\nError: query.fa or query.fasta does not exist. Please provide a query fasta file in the working directory.\n')
 
 ##################################
 # Generating sampleSheet outputs #
@@ -75,11 +75,8 @@ for genome in genomeList:
     sampleSheet[
         genome_bam] = expand("Alignment/{concat_sample}_{genome}.{fileType}",concat_sample=sampleSheet.concat,genome=genome,fileType='bam')
 
-
-
 #save sampleSheet as a text file in the working directory
 sampleSheet.to_csv('sampleSheet.tsv',sep="\t",index=False)
-
 
 ######################
 # Begin the pipeline #
@@ -221,5 +218,5 @@ rule consensus:
         modules['medakaVer']
     shell:
         """
-        bash ./src/medaka_consensus.sh {input.fasta} {params.genome} {output.bam} {output.index}
+        bash ./src/make_consensus.sh {input.fasta} {params.genome} {output.bam} {output.index}
         """

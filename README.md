@@ -31,6 +31,9 @@ Clone pipeline
 git clone https://github.com/markus-nevil/transgenic_longread_map_snakemake.git && mv transgenic_longread_map_snakemake/* . && rm -rf transgenic_longread_map_snakemake
 
 ```
+[!IMPORTANT]
+Review this section carefully, especially after cloning the repository. If you had files of the same name, they may have been rewritten.
+
 **Required:** Add/edit the `query.fa` file with the sites to be used as anchors for the alignment ([see below](#query)).
 
 **Required:** Edit `sampleInfo.tsv` to include the sample information ([see below](#sampleInfo)).
@@ -65,7 +68,8 @@ AAACATATATAATACCGCGATCGCGATAATGA
 
 ### sampleInfo
 
-**Note:** Paths are relative to the location of the `sampleInfo.tsv` file.
+[!NOTE]
+Paths are relative to the location of the `sampleInfo.tsv` file.
 
 Ensure that the FASTA file with sites to be used as anchors is named properly in the `querySites` column.
 
@@ -87,7 +91,8 @@ Explanation for each column:
 5. **querySites:** The FASTA file containing the sites to be used as anchors for the alignment.
 	1. This FASTA file must be multiple 40-50 bp sequences, each of unique sequence flanking repeat regions.
 
-**Note:** Each row indicates a different experiment (i.e. "barcode11" is a folder holding FASTQ files from a single run).
+[!NOTE]
+Each row indicates a different experiment (i.e. "barcode11" is a folder holding FASTQ files from a single run).
 Each row can have different values for each column, or the same values. These determine how the files in the `sampleDirectory` are processed.
 
 ### config
