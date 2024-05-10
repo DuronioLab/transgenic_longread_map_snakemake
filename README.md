@@ -29,18 +29,18 @@ appropriate programs installed.
 Clone pipeline
 ```
 git clone https://github.com/markus-nevil/transgenic_longread_map_snakemake.git && mv transgenic_longread_map_snakemake/* . && rm -rf transgenic_longread_map_snakemake
-
 ```
+
 > [!IMPORTANT]
 > Review this section carefully, especially after cloning the repository. If you had files of the same name, they may have been rewritten.
 
-**Required:** Add/edit the `query.fa` file with the sites to be used as anchors for the alignment ([see below](#query)).
+1. **Required:** Add/edit the `query.fa` file with the sites to be used as anchors for the alignment ([see below](#query)).
 
-**Required:** Edit `sampleInfo.tsv` to include the sample information ([see below](#sampleInfo)).
+2. **Required:** Edit `sampleInfo.tsv` to include the sample information ([see below](#sampleInfo)).
 
-**Required:** Edit `config.json` to include the reference genome(s) and default genome ([see below](#config)).
+3. **Required:** Edit `config.json` to include the reference genome(s) and default genome ([see below](#config)).
 
-**Optional:** Edit `slurmConfig.json` to configure default parameters if necessary.
+4. **Optional:** Edit `slurmConfig.json` to configure default parameters if necessary.
 
 Load python on Longleaf with:
 ```
@@ -148,22 +148,22 @@ You may copy or move your raw data folders into the `Project_Folder` directory.
 ## Expected Output
 
 1. **Alignment files:** The aligned reads in BAM and SAM format.
-   1. Alignment/[SampleName]_[DefaultGenome(s)].sam
-   2. Alignment/[SampleName]_[DefaultGenome(s)].bam
-   3. Alignment/[SampleName]_[DefaultGenome(s)].bam.bai
-   4. Alignment/[SampleName]_[ReferenceGenome(s)].sam
-   5. Alignment/[SampleName]_[ReferenceGenome(s)].bam
-   6. Alignment/[SampleName]_[ReferenceGenome(s)].bam.bai
+   1. Alignment/*[SampleName]*_*[DefaultGenome(s)]*.sam
+   2. Alignment/*[SampleName]*_*[DefaultGenome(s)]*.bam
+   3. Alignment/*[SampleName]*_*[DefaultGenome(s)]*.bam.bai
+   4. Alignment/*[SampleName]*_*[ReferenceGenome(s)]*.sam
+   5. Alignment/*[SampleName]*_*[ReferenceGenome(s)]*.bam
+   6. Alignment/*[SampleName]*_*[ReferenceGenome(s)]*.bam.bai
    
 
 2. **Stats files:** Stats about the sequencing and alignments.
-   1. Stats/[SampleName]\_concat\_[DefaultGenome(s)]readDepth.pdf
-   2. Stats/NanoPlot-report_[SampleName]_concat.html
-   3. Stats/[SampleName]\_concat\_screen.html
+   1. Stats/*[SampleName]*\_concat\_*[DefaultGenome(s)]* readDepth.pdf
+   2. Stats/NanoPlot-report_*[SampleName]*_concat.html
+   3. Stats/*[SampleName]*\_concat\_screen.html
 
 
 3. **Consensus sequence:** The consensus sequence of the aligned reads to the Reference Genome(s).
-   1. Consensus/[SampleName]_[ReferenceGenome(s)].fasta
+   1. Consensus/*[SampleName]*_*[ReferenceGenome(s)]*.fasta
 
 ## Getting your data to UNC Longleaf
 

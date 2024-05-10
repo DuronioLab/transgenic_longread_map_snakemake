@@ -220,3 +220,20 @@ rule consensus:
         """
         bash ./src/make_consensus.sh {input.fasta} {params.genome} {output.bam} {output.index}
         """
+
+rule query_bed:
+    input:
+        fasta=[config['genome'][genome]['fasta'] for genome in REFGENOME]
+    output:
+        bed=expand("Alignment/{genome}_queries.bed",genome=REFGENOME)
+    params:
+        query="query.fasta"
+    shell:
+        """
+        # Run blat and save the output to a psl file
+        blat {input.fasta} {params.query} -noHead output.psl
+
+        # Use awk to extract the necessary columns and convert them to a BED file
+        awk '{{print $14, $16, $17, $10}}' output.psl > output.bed
+        mv output.bed {output.bed}
+        """
