@@ -12,13 +12,15 @@ basename_columns = config['baseNameCols']
 
 REFGENOME = config['refGenome']
 DEFAULTGENOME = config['defaultGenome']
-#chromSize_Path = config['genome'][DEFAULTGENOME]['chromSize']
-#genomeSize = config['genome'][DEFAULTGENOME]['genomeSize']
 
 modules = config['module']
 
-#########
-# Validation
+##############
+# Validation #
+##############
+
+# Check whether important files/names are specified in the config.json file. Then check if the files exits.
+# if not, exit the program.
 
 if not os.path.exists(file_info_path):
     sys.exit('Error: {name} does not exist. Be sure to set `sampleInfo` in config.json.'.format(name=file_info_path))
@@ -26,8 +28,34 @@ if not os.path.exists(file_info_path):
 if type(REFGENOME) is not str:
     sys.exit('Error: refGenome must be a string. Currently set to: {}. Double check `refGenome` in config.json.'.format(REFGENOME))
 
-#########
-# Generating sampleSheet outputs
+if isinstance(REFGENOME, list):
+    for genome in REFGENOME:
+        if genome not in config['genome']:
+            sys.exit(f'Error: Your `refGenome` {genome} is not found as an entry in the `genome` section of config.json.')
+else:
+    if REFGENOME not in config['genome']:
+        sys.exit(f'Error: Your `refGenome` {REFGENOME} is not found as an entry in the `genome` section of config.json.')
+
+if isinstance(DEFAULTGENOME, list):
+    for genome in DEFAULTGENOME:
+        if genome not in config['genome']:
+            sys.exit(f'Error: Your `defaultGenome` {genome} is not found as an entry in the `genome` section of config.json.')
+else:
+    if DEFAULTGENOME not in config['genome']:
+        sys.exit(f'Error: Your `defaultGenome` {DEFAULTGENOME} is not found as an entry in the `genome` section of config.json.')
+
+if not os.path.exists(config['genome'][DEFAULTGENOME]['fasta']):
+    sys.exit('Error: defaultGenome FASTA {name} does not exist. Be sure to set `fasta` in config.json.'.format(name=config['genome'][DEFAULTGENOME]['fasta']))
+
+if not os.path.exists(config['genome'][REFGENOME]['fasta']):
+    sys.exit('Error: The refGenome FASTA {name} does not exist. Be sure to set `fasta` in config.json.'.format(name=config['genome'][REFGENOME]['fasta']))
+
+if not os.path.exists('query.fa') and not os.path.exists('query.fasta'):
+    sys.exit('Error: query.fa or query.fasta does not exist. Please provide a query fasta file in the working directory.')
+
+##################################
+# Generating sampleSheet outputs #
+##################################
 
 if type(REFGENOME) is str:
     REFGENOME = [REFGENOME]
@@ -57,7 +85,8 @@ sampleSheet.to_csv('sampleSheet.tsv',sep="\t",index=False)
 # Begin the pipeline #
 ######################
 
-
+# Snakemake rule that runs all rules and specified desired final outputs.
+# Anything not listed will either not be generated or will be deleted after the pipeline is run.
 rule all:
     input:
         expand("Fastq/{sample}_concat.fastq",sample=set(sampleSheet.sampleName)),
@@ -70,7 +99,6 @@ rule all:
         expand("Medaka/{concat_sample}_consensus.bam", concat_sample=set(sampleSheet.concat)),
         expand("Medaka/{concat_sample}_consensus.bam.bai", concat_sample=set(sampleSheet.concat))
 
-#expand("Medaka/{concat_sample}_consensus.bam", concat_sample=sampleSheet.concat)
 
 #Snakemake rule that concatenates the fastq files for each sample found in each sampleDirectory of the sampleSheet
 
@@ -87,6 +115,7 @@ rule concatFastq:
         done
         """
 
+# Snakemake rule that runs NanoPlot on the concatenated fastq files for each sample in the sampleSheet
 rule nanoplot:
     input:
         fastq=expand("Fastq/{concat_sample}.fastq",concat_sample=set(sampleSheet.concat))
@@ -101,6 +130,8 @@ rule nanoplot:
         rm -R -f NanoPlot
         """
 
+# Snakemake rule that runs FastQScreen on the concatenated fastq files for each sample in the sampleSheet.
+# The configuration for the queried databases is specified in the /src/fastq_screen.conf file.
 rule fqscreen:
     input:
         fastq=expand("Fastq/{concat_sample}.fastq",concat_sample=set(sampleSheet.concat))
@@ -119,6 +150,8 @@ rule fqscreen:
 
         """
 
+# Rule that aligns the concatenated fastq files to the specified genome(s) using minimap2 and then
+# sorts the resulting sam file with samtools into a bam file.
 rule align:
     input:
         fastq=expand("Fastq/{concat_sample}.fastq",concat_sample=set(sampleSheet.concat))
@@ -139,6 +172,7 @@ rule align:
         samtools index {output.bam}
         """
 
+# Snakemake rule that makes a read depth graph for each sample in the sampleSheet for each DEFAULTGENOME specifiec.
 rule chrom_graph:
     input:
         expand("Alignment/{concat_sample}_{genome}.bam",concat_sample=set(sampleSheet.concat),genome=DEFAULTGENOME)
@@ -150,7 +184,8 @@ rule chrom_graph:
         """
         bash ./src/chrom_graph.sh {input} {output}
         """
-
+# Snakemake rule that filters the concat FASTQ for each sample for reads that contain sequences in the query.fa file and
+# aligns the filtered reads to the specified genome(s) using minimap2. The resulting sam file is then sorted with samtools into a bam file.
 rule query_align:
     input:
         fastq=expand("Fastq/{concat_sample}.fastq",concat_sample=set(sampleSheet.concat)),
@@ -173,6 +208,7 @@ rule query_align:
         bash ./src/query_align.sh {input.fastq} {input.fasta} {output.sam} {output.bam} {params.query} {output.filteredFasta}
         """
 
+# Snakemake rule that runs medaka_consensus on the filtered FASTA files for each sample in the sampleSheet.
 rule consensus:
     input:
         fasta=expand("Alignment/{concat_sample}_{genome}_filtered.fasta",concat_sample=set(sampleSheet.concat),genome=REFGENOME)
@@ -185,9 +221,5 @@ rule consensus:
         modules['medakaVer']
     shell:
         """
-        medaka_consensus -i {input.fasta} -d {params.genome} -o temp_medaka
-        mv ./temp_medaka/calls_to_draft.bam {output.bam}
-        mv ./temp_medaka/calls_to_draft.bam.bai {output.index}
-        rm ./temp_medaka/consensus_probs.hdf
-        rm -R -f temp_medaka
+        bash ./src/medaka_consensus.sh {input.fasta} {params.genome} {output.bam} {output.index}
         """
