@@ -1,6 +1,6 @@
 {
   "__default__": {
-    "time": "30:00",
+    "time": "1:00:00",
     "threads": "1",
     "mem": "8G"
   },
@@ -8,19 +8,19 @@
 	{
 		"mem" : "8G",
 		"threads" : "1",
-		"time" : "30:00"
+		"time" : "2:00:00"
 	},
  	"fqscreen" :
 	{
 		"mem" : "8G",
 		"threads" : "1",
-		"time" : "30:00"
+		"time" : "2:00:00"
 	},
  	"align" :
 	{
 		"mem" : "16G",
 		"threads" : "2",
-		"time" : "3:00:00"
+		"time" : "9:00:00"
 	},
  	"chrom_graph" :
 	{
@@ -32,6 +32,12 @@
 	{
 		"mem" : "16G",
 		"threads" : "1",
-		"time" : "1:00:00"
+		"time" : "3:00:00"
+	},
+	"consensus" :
+	{
+		"mem" : "16G",
+		"threads" : "1",
+		"time" : "3:00:00"
 	}
 }

@@ -42,11 +42,6 @@ git clone https://github.com/markus-nevil/transgenic_longread_map_snakemake.git 
 
 4. **Optional:** Edit `slurmConfig.json` to configure default parameters if necessary.
 
-Load python on Longleaf with:
-```
-module load python
-```
-
 Start the pipeline submission with:
 ```
 sh slurmSubmission.sh
