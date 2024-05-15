@@ -74,6 +74,17 @@ barcode11	4xCad	1	dHisC_Cadillac_D4x_P4x	query.fa
 barcode12	4xCad	2	dHisC_Cadillac_D4x_P4x	query.fa
 barcode10	6xCad	1	dHisC_Cadillac_D6x_P6x	query.fa
 ```
+For more complex experiments, you may want to include multiple refGenomes and querySites to be analyzed
+at the same time. For example:
+
+```
+sampleDirectory	sampleName	rep	refGenome	querySites
+barcode10	4xCad	1	dHisC_Cadillac_D4x_P4x	query.fa
+barcode10	4xCad	1	dHisC_Cadillac_D6x_P6x	query.fa
+barcode11	6xCad	1	dHisC_Cadillac_D6x	query_oneSide.fa
+barcode12	6xCad	1	dHisC_Cadillac_D6x_P6x	query.fa
+barcode13	6xCad	1	dHisC_Cadillac_D12x	query_12x.fa
+```
 Explanation for each column:
 1. **sampleDirectory:** The directory containing the FASTQ files.
    1. At the moment, the pipeline assumes all FASTQ files are .fastq.gz files.
@@ -92,6 +103,8 @@ Explanation for each column:
 
 ### config
 The `config.json` file contains the configuration for the pipeline and is found in the `src` directory.
+The first half of the config file needs to be edited to match the names of your genomes. The last half should only
+be edited if a different program version is required. In the following examples, only the first half is shown.
 
 Edit the `defaultGenome` and `refGenome` fields to match the names of your entire genome(s) and reference of your transgenic locus/loci respectively.
 
@@ -99,12 +112,8 @@ Ensure that `genome` has an entry for each `defaultGenome` and `refGenome`, and 
 
 ```
 {
-  "sampleInfo" : "sampleInfo.tsv",
-  "sampleDirs" : "sampleDirectory",
-  "baseNameCols": ["sampleName", "rep"],
   "defaultGenome": "dm6_mt_wMel",
   "refGenome": "dHisC_Cadillac_D4x_P4x",
-  "querySites": "querySites",
   "genome" : {
     "dm6_mt_wMel" : {
       "fasta" : "dm6_mt_wMel.fasta",
@@ -113,6 +122,32 @@ Ensure that `genome` has an entry for each `defaultGenome` and `refGenome`, and 
       "fasta" : "dHisC_Cadillac_D4x_P4x.fa"
     }
   }
+```
+
+Sometimes, you may want to align the same data to multiple genomes, or you may wish to process multiple
+samples with different genomes. In these cases, you can use a list (by using square brackets [ ] ) for `defaultGenome` and `refGenome`.
+
+An example of a case where you want multiple `defaultGenome` and `refGenome` entries:
+
+```
+{
+  "defaultGenome": ["dm6_mt_wMel", "dm6"],
+  "refGenome": ["dHisC_Cadillac_D4x_P4x", "dHisC_Cadillac_D6x_P6x"],
+  "genome" : {
+    "dm6_mt_wMel" : {
+      "fasta" : "dm6_mt_wMel.fasta",
+    },
+    "dm6" : {
+      "fasta" : "dm6.fasta",
+    },
+    "dHisC_Cadillac_D4x_P4x" : {
+      "fasta" : "dHisC_Cadillac_D4x_P4x.fa"
+    },
+    "dHisC_Cadillac_D6x_P6x" : {
+      "fasta" : "dHisC_Cadillac_D6x_P6x.fa"
+    }
+  }
+}
 ```
 
 ## Required directory structure
@@ -149,6 +184,7 @@ You may copy or move your raw data folders into the `Project_Folder` directory.
    4. Alignment/*[SampleName]*_*[ReferenceGenome(s)]*.sam
    5. Alignment/*[SampleName]*_*[ReferenceGenome(s)]*.bam
    6. Alignment/*[SampleName]*_*[ReferenceGenome(s)]*.bam.bai
+   7. Alignment/*[SampleName]*_queries.bed
    
 
 2. **Stats files:** Stats about the sequencing and alignments.

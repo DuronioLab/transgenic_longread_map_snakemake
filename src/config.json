@@ -1,10 +1,6 @@
 {
-  "sampleInfo" : "sampleInfo.tsv",
-  "sampleDirs" : "sampleDirectory",
-  "baseNameCols": ["sampleName", "rep"],
   "defaultGenome": "dm6_mt_wMel",
   "refGenome": "dHisC_Cadillac_D4x_P4x",
-  "querySites": "querySites",
   "genome" : {
     "dm6_mt_wMel" : {
       "fasta" : "dm6_mt_wMel.fasta"

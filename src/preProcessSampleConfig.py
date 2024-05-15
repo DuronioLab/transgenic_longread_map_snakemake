@@ -40,7 +40,7 @@ def addBaseName(df, cols, delim="-", outputColName="baseName"):
 def makeSampleSheets(sampleInfoPath, baseNameCol, delim, fileDelimiter="\t"):
     df = pd.read_table(sampleInfoPath, delimiter=fileDelimiter)
     df = addBaseName(df, baseNameCol, delim)
-    print(df.head())
+    #print(df.head())
     keep_cols = baseNameCol.copy()
     keep_cols.append(baseNameCol)
     return df

@@ -7,8 +7,8 @@ import preProcessSampleConfig as pre
 with open('./src/config.json') as json_data:
     config = json.load(json_data)
 
-file_info_path = config['sampleInfo']
-basename_columns = config['baseNameCols']
+file_info_path = "sampleInfo.tsv"
+basename_columns = ["sampleName", "rep"]
 
 REFGENOME = config['refGenome']
 DEFAULTGENOME = config['defaultGenome']
@@ -199,7 +199,7 @@ rule query_align:
         modules['seqtkVer'],
         modules['minimap2Ver']
     params:
-        query="query.fasta"
+        query=expand("{query_fasta}", query_fasta=set(sampleSheet.querySites))
     shell:
         """
         bash ./src/query_align.sh {input.fastq} {input.fasta} {output.sam} {output.bam} {params.query} {output.filteredFasta}
