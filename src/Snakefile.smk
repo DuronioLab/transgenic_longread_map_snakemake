@@ -81,10 +81,16 @@ sampleSheet.to_csv('sampleSheet.tsv',sep="\t",index=False)
 #check if any files that follow the naming convention 'Features from *.txt' exist in the working directory. If they do, call print()
 
 gff = []
-if len([f for f in os.listdir('..') if f.startswith('Features from')]) > 0:
-    for f in [f for f in os.listdir('..') if f.startswith('Features from')]:
-        fgff = "Alignment/" + f.split('Features from ')[1].split('.txt')[0] + '.gff'
-        gff.append(fgff)
+if len([f for f in os.listdir('.') if f.startswith('Features from')]) > 0:
+    for f in [f for f in os.listdir('.') if f.startswith('Features from')]:
+        gffBasename = f.split('Features from ')[1].split('.txt')[0]
+        #Check if the basename of the file is in the genomeList
+        if gffBasename not in genomeList:
+            print('Features from {name}.txt found in working directory, but {name} is not in the genomeList. Skipping...'.format(name=gffBasename))
+            continue
+        else:
+            fgff = "Alignment/" + gffBasename + '.gff'
+            gff.append(fgff)
 
 ######################
 # Begin the pipeline #
@@ -253,5 +259,5 @@ rule snap_to_gff:
         gff=expand("Alignment/{genome}.gff",genome=REFGENOME)
     shell:
         """
-        python3 ./src/snap_to_gff.py {input.snap} {output.gff}
+        python3 ./src/snapToGff.py "{input.snap}" {output.gff}
         """
