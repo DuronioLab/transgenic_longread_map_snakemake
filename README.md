@@ -8,6 +8,8 @@
    - [query.fa](#query)
    - [sampleInfo.tsv](#sampleInfo)
    - [config.json](#config)
+- [Optional files](#optional-files)
+  - [Features](#features)
 - [Required directory structure](#required-directory-structure)
 - [Expected Output](#expected-output)
 - [Getting your data to UNC Longleaf](#getting-your-data-to-unc-longleaf)
@@ -149,6 +151,25 @@ An example of a case where you want multiple `defaultGenome` and `refGenome` ent
   }
 }
 ```
+## Optional files
+### Features
+The pipeline is able to generate a GFF annotation file for easier viewing of aligned data in genome viewers (like IGV).
+The GFF files are generated for each `Reference Genome` only if the a `Features from X.txt` file from SnapGene is provided.
+This file should be generated from the same FASTA file used to generate the `Reference Genome` FASTA file and `X` should be
+the name of the reference genome.
+
+Follow these steps to generate the `Features from X.txt` file:
+1. Open your annotated genome file in Snapgene.
+2. Go to `Features` -> `Export Feature Data`
+3. Select all 5 feature data types and export the file as a `.txt` file.
+   1. Ensure the name of the file is `Features from X.txt` where `X` is the name of the reference genome.
+4. Upload this file to your `Project_Folder` directory.
+
+If the pipeline does not find the `Features from X.txt` file or the pipeline does not find a file that matches an 
+expected `Reference Genome`, it will not generate the GFF file.
+
+The resulting GFF file will be named *[ReferenceGenome]*.gff and will be moved to the Alignment directory. Open this file in IGV
+to view the features of the reference genome.
 
 ## Required directory structure
 
