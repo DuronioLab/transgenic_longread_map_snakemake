@@ -78,6 +78,14 @@ for genome in genomeList:
 #save sampleSheet as a text file in the working directory
 sampleSheet.to_csv('sampleSheet.tsv',sep="\t",index=False)
 
+#check if any files that follow the naming convention 'Features from *.txt' exist in the working directory. If they do, call print()
+
+gff = []
+if len([f for f in os.listdir('..') if f.startswith('Features from')]) > 0:
+    for f in [f for f in os.listdir('..') if f.startswith('Features from')]:
+        fgff = "Alignment/" + f.split('Features from ')[1].split('.txt')[0] + '.gff'
+        gff.append(fgff)
+
 ######################
 # Begin the pipeline #
 ######################
@@ -94,8 +102,8 @@ rule all:
         expand("Alignment/{concat_sample}_{genome}.bam.bai",concat_sample=set(sampleSheet.concat),genome=genomeList),
         expand("Stats/{concat_sample}_{genome}readDepth.pdf",concat_sample=set(sampleSheet.concat),genome=DEFAULTGENOME),
         expand("Medaka/{concat_sample}_consensus.bam", concat_sample=set(sampleSheet.concat)),
-        expand("Medaka/{concat_sample}_consensus.bam.bai", concat_sample=set(sampleSheet.concat))
-
+        expand("Medaka/{concat_sample}_consensus.bam.bai", concat_sample=set(sampleSheet.concat)),
+        gff
 
 #Snakemake rule that concatenates the fastq files for each sample found in each sampleDirectory of the sampleSheet
 
@@ -236,4 +244,14 @@ rule query_bed:
         # Use awk to extract the necessary columns and convert them to a BED file
         awk '{{print $14, $16, $17, $10}}' output.psl > output.bed
         mv output.bed {output.bed}
+        """
+
+rule snap_to_gff:
+    input:
+        snap=expand("Features from {genome}.txt",genome=REFGENOME)
+    output:
+        gff=expand("Alignment/{genome}.gff",genome=REFGENOME)
+    shell:
+        """
+        python3 ./src/snap_to_gff.py {input.snap} {output.gff}
         """
