@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import preProcessSampleConfig as pre
+from pathlib import Path
 
 #import the config.json file as config
 with open('./src/config.json') as json_data:
@@ -36,6 +37,14 @@ else:
     if REFGENOME not in config['genome']:
         sys.exit('\nError: Your `refGenome` {name} is not found as an entry in the `genome` section of config.json.\n'.format(name=REFGENOME))
 
+if config['singleArray']:
+    if isinstance(config['singleArray'], list):
+        for array in config['singleArray']:
+            if array not in config['genome']:
+                sys.exit('\nError: Your `singleArray` {name} is not found as an entry in the `genome` section of config.json.\n'.format(name=array))
+    else:
+        if config['singleArray'] not in config['genome']:
+            sys.exit('\nError: Your `singleArray` {name} is not found as an entry in the `genome` section of config.json.\n'.format(name=config['singleArray']))
 if isinstance(DEFAULTGENOME, list):
     for genome in DEFAULTGENOME:
         if genome not in config['genome']:
@@ -92,6 +101,21 @@ if len([f for f in os.listdir('.') if f.startswith('Features from')]) > 0:
             fgff = "Alignment/" + gffBasename + '.gff'
             gff.append(fgff)
 
+singleArray = []
+#check if the 'array' entry in config.json is not empty, if so, add the file(s) to the singleArray list.
+if config['singleArray']:
+    for array in config['singleArray']:
+        if not os.path.exists(array):
+            sys.exit('\nError: {name} does not exist. Be sure to set `singleArray` in config.json.\n'.format(name=array))
+        else:
+            #Remove any directories and file extension from the array name
+            array = Path(array).stem
+            for sample in set(sampleSheet.concat):
+                samSingleArray = "Alignment/" + sample + "_" + array + '.sam'
+                bamSingleArray = "Alignment/" + sample + "_" + array + '.bam'
+                bamIndexSingleArray = "Alignment/" + sample + "_" + array + '.bam.bai'
+                singleArray.extend([samSingleArray, bamSingleArray, bamIndexSingleArray])
+
 ######################
 # Begin the pipeline #
 ######################
@@ -109,7 +133,8 @@ rule all:
         expand("Stats/{concat_sample}_{genome}readDepth.pdf",concat_sample=set(sampleSheet.concat),genome=DEFAULTGENOME),
         expand("Medaka/{concat_sample}_consensus.bam", concat_sample=set(sampleSheet.concat)),
         expand("Medaka/{concat_sample}_consensus.bam.bai", concat_sample=set(sampleSheet.concat)),
-        gff
+        gff,
+        singleArray
 
 #Snakemake rule that concatenates the fastq files for each sample found in each sampleDirectory of the sampleSheet
 
@@ -260,4 +285,24 @@ rule snap_to_gff:
     shell:
         """
         python3 ./src/snapToGff.py "{input.snap}" {output.gff}
+        """
+
+rule array_align:
+    input:
+        fastq=expand("Fastq/{concat_sample}.fastq",concat_sample=set(sampleSheet.concat))
+    output:
+        sam=expand("Alignment/{concat_sample}_{genome}.sam",concat_sample=set(sampleSheet.concat),genome=REFGENOME),
+        bam=expand("Alignment/{concat_sample}_{genome}.bam",concat_sample=set(sampleSheet.concat),genome=REFGENOME),
+        bamIndex=expand("Alignment/{concat_sample}_{genome}.bam.bai",concat_sample=set(sampleSheet.concat),genome=REFGENOME),
+    envmodules:
+        modules['samtoolsVer'],
+        modules['blatVer'],
+        modules['seqkitVer'],
+        modules['seqtkVer'],
+        modules['minimap2Ver']
+    params:
+        array=expand("{array_fasta}",array_fasta=config["singleArray"])
+    shell:
+        """
+        bash ./src/histoneSum.sh {input.fastq} {params.array} {output.sam} {output.bam}
         """

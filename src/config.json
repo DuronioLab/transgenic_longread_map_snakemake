@@ -1,6 +1,7 @@
 {
   "defaultGenome": "dm6_mt_wMel",
   "refGenome": "dHisC_Cadillac_D4x_P4x",
+  "singleArray": "",
   "genome" : {
     "dm6_mt_wMel" : {
       "fasta" : "dm6_mt_wMel.fasta"
