@@ -102,19 +102,27 @@ if len([f for f in os.listdir('.') if f.startswith('Features from')]) > 0:
             gff.append(fgff)
 
 singleArray = []
+paramArray = []
 #check if the 'array' entry in config.json is not empty, if so, add the file(s) to the singleArray list.
 if config['singleArray']:
+    if not isinstance(config['singleArray'], list):
+        config['singleArray'] = [config['singleArray']]
     for array in config['singleArray']:
-        if not os.path.exists(array):
+        if not os.path.exists(config['genome'][array]['fasta']):
             sys.exit('\nError: {name} does not exist. Be sure to set `singleArray` in config.json.\n'.format(name=array))
         else:
             #Remove any directories and file extension from the array name
+            array = config['genome'][array]['fasta']
+            paramArray.append(array)
             array = Path(array).stem
             for sample in set(sampleSheet.concat):
                 samSingleArray = "Alignment/" + sample + "_" + array + '.sam'
                 bamSingleArray = "Alignment/" + sample + "_" + array + '.bam'
                 bamIndexSingleArray = "Alignment/" + sample + "_" + array + '.bam.bai'
                 singleArray.extend([samSingleArray, bamSingleArray, bamIndexSingleArray])
+    print(singleArray)
+
+
 
 ######################
 # Begin the pipeline #
@@ -291,9 +299,9 @@ rule array_align:
     input:
         fastq=expand("Fastq/{concat_sample}.fastq",concat_sample=set(sampleSheet.concat))
     output:
-        sam=expand("Alignment/{concat_sample}_{genome}.sam",concat_sample=set(sampleSheet.concat),genome=REFGENOME),
-        bam=expand("Alignment/{concat_sample}_{genome}.bam",concat_sample=set(sampleSheet.concat),genome=REFGENOME),
-        bamIndex=expand("Alignment/{concat_sample}_{genome}.bam.bai",concat_sample=set(sampleSheet.concat),genome=REFGENOME),
+        sam=expand("Alignment/{concat_sample}_{genome}.sam",concat_sample=set(sampleSheet.concat),genome=config["singleArray"]),
+        bam=expand("Alignment/{concat_sample}_{genome}.bam",concat_sample=set(sampleSheet.concat),genome=config["singleArray"]),
+        bamIndex=expand("Alignment/{concat_sample}_{genome}.bam.bai",concat_sample=set(sampleSheet.concat),genome=config["singleArray"]),
     envmodules:
         modules['samtoolsVer'],
         modules['blatVer'],
@@ -301,7 +309,7 @@ rule array_align:
         modules['seqtkVer'],
         modules['minimap2Ver']
     params:
-        array=expand("{array_fasta}",array_fasta=config["singleArray"])
+        array = paramArray
     shell:
         """
         bash ./src/histoneSum.sh {input.fastq} {params.array} {output.sam} {output.bam}
