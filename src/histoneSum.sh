@@ -33,8 +33,14 @@ do
       start=$(echo $line | awk '{print $16}')
       end=$(echo $line | awk '{print $17}')
 
-      new_read_name="${read_name}_${counter}"
+      if [ "$start" -eq 0 ]
+      then
+        start=1
+      fi
 
+      echo $read_name $start $end
+
+      new_read_name="${read_name}_${counter}"
       sequence=$(samtools faidx "$fasta_file" "$read_name:$start-$end")
 
       echo ">$new_read_name" >> subreads.fasta
@@ -44,11 +50,11 @@ do
 done
 
 seqtk seq -F '#' subreads.fasta > subreads.fastq
-max=$(echo "$seq_length * 2" | bc)
-max=$(printf "%.0f" $max)
-seqkit seq -M $max subreads.fastq > subreads_filtered.fastq
-
-minimap2 --secondary=no --sam-hit-only -ax map-ont $array_fasta subreads_filtered.fastq > $output_sam
+#max=$(echo "$seq_length * 2" | bc)
+#max=$(printf "%.0f" $max)
+#seqkit seq -M $max subreads.fastq > subreads_filtered.fastq
+#minimap2 --secondary=no --sam-hit-only -ax map-ont $array_fasta subreads_filtered.fastq > $output_sam
+minimap2 --secondary=no --sam-hit-only -ax map-ont $array_fasta subreads.fastq > $output_sam
 
 wc -l $output_sam
 
