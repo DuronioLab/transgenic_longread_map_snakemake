@@ -15,48 +15,31 @@ seqkit fq2fa --quiet out.fastq -o out.fasta
 
 split --lines=40000 -d --additional-suffix=".fasta" out.fasta out.
 
+query_length=$(awk '/^>/ {if (seqlen){print seqlen}; seqlen=0; next; } { seqlen = seqlen + length($0)}END{print seqlen}' "$array_fasta")
+
+seqkit subseq --region 1:50 $array_fasta > start.fasta
+
 samtools faidx $array_fasta
 
-read -r seq_name seq_length rest < <(cut -f1,2 "$array_fasta.fai")
-
+#touch repeats.txt
 touch subreads.fasta
 
 for fasta_file in out.*.fasta
 do
-    blat "$fasta_file" $array_fasta -oneOff=3 -noHead output.psl
-    awk -v len="$seq_length" 'BEGIN {FS=OFS="\t"} $1 >= len/2' output.psl > filtered.psl
-    samtools faidx "$fasta_file"
-    counter=1
-    while IFS= read -r line
-    do
-      read_name=$(echo $line | awk '{print $14}')
-      start=$(echo $line | awk '{print $16}')
-      end=$(echo $line | awk '{print $17}')
+  blat "$fasta_file" start.fasta -oneOff=3 -noHead output.psl
+  awk -v len=$query_length 'BEGIN {OFS="\t"} {print $14, $16, $16+len}' output.psl > repeats.txt
+  while read -r name start end
+  do
+    echo ${name} ${start} ${end}
+    samtools faidx "$fasta_file" ${name}:${start}-${end} >> subreads.fasta
 
-      if [ "$start" -eq 0 ]
-      then
-        start=1
-      fi
-
-      echo $read_name $start $end
-
-      new_read_name="${read_name}_${counter}"
-      sequence=$(samtools faidx "$fasta_file" "$read_name:$start-$end")
-
-      echo ">$new_read_name" >> subreads.fasta
-      echo "$sequence" >> subreads.fasta
-      ((counter++))
-    done < filtered.psl
+  done < repeats.txt
 done
 
 seqtk seq -F '#' subreads.fasta > subreads.fastq
-#max=$(echo "$seq_length * 2" | bc)
-#max=$(printf "%.0f" $max)
-#seqkit seq -M $max subreads.fastq > subreads_filtered.fastq
-#minimap2 --secondary=no --sam-hit-only -ax map-ont $array_fasta subreads_filtered.fastq > $output_sam
-minimap2 --secondary=no --sam-hit-only -ax map-ont $array_fasta subreads.fastq > $output_sam
 
-wc -l $output_sam
+##TODO check the parameters to ensure that minimap2 is aligning correctly. It has a tendency to have a short (150 bp) alignment as the primary alignment and the full 5kb alignment as secondary.
+minimap2 -m 500 -ax map-ont $array_fasta subreads.fastq > $output_sam
 
 samtools sort $output_sam -o mapped.bam
 samtools view -bq 1 mapped.bam > $output_bam
@@ -65,7 +48,7 @@ samtools index $output_bam
 rm out.*
 rm mapped.bam
 rm subreads.fast*
-rm filtered.psl
+rm repeats.txt
 rm output.psl
-rm subreads_filtered.fastq
+rm start.fasta
 rm renamed_reads.fastq
