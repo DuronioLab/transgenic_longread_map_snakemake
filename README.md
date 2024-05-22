@@ -112,10 +112,14 @@ Edit the `defaultGenome` and `refGenome` fields to match the names of your entir
 
 Ensure that `genome` has an entry for each `defaultGenome` and `refGenome`, and each has an entry for the `fasta` file.
 
+**Optional:** Add one-or-more 1x arrays of your reference genome to the `singleArray` field. More information in [the optional files section](#optional-files).
+This may otherwise remain empty.
+
 ```
 {
   "defaultGenome": "dm6_mt_wMel",
   "refGenome": "dHisC_Cadillac_D4x_P4x",
+  "singleArray": "",
   "genome" : {
     "dm6_mt_wMel" : {
       "fasta" : "dm6_mt_wMel.fasta",
@@ -135,6 +139,7 @@ An example of a case where you want multiple `defaultGenome` and `refGenome` ent
 {
   "defaultGenome": ["dm6_mt_wMel", "dm6"],
   "refGenome": ["dHisC_Cadillac_D4x_P4x", "dHisC_Cadillac_D6x_P6x"],
+  "singleArray": "",
   "genome" : {
     "dm6_mt_wMel" : {
       "fasta" : "dm6_mt_wMel.fasta",
@@ -171,6 +176,39 @@ expected `Reference Genome`, it will not generate the GFF file.
 The resulting GFF file will be named *[ReferenceGenome]*.gff and will be moved to the Alignment directory. Open this file in IGV
 to view the features of the reference genome.
 
+### Single Array
+Determining whether any single array repeat is incorrect is difficult, but can be partially overcome by examining all the
+arrays over a single 1x reference sequence. By including one-or-more 1x array references in the directory and listing them
+in the `config.json` file, the pipeline will automatically align the reads to this array. This is done by finding 1x arrays
+in each read and creating "subreads" of each 1x array in the read. Thus, a read spanning 5 repeats should generate 5, 1x
+repeat subreads.
+
+Requirements:
+1. A 1x reference genome FASTA file added to the `Project_Folder` directory.
+   1. More than one file can be added. Only those listed in `config.json` will be used.
+2. The name of the 1x reference genome in the `config.json` file under the `singleArray` field.
+3. The FASTA file name must be added in the `config.json` file under the `genome` field.
+
+Example `config.json` file with a single 1x array:
+```
+{
+  "defaultGenome": "dm6_mt_wMel",
+  "refGenome": "dHisC_Cadillac_D4x_P4x",
+  "singleArray": "wild-type_array",
+  "genome" : {
+    "dm6_mt_wMel" : {
+      "fasta" : "dm6_mt_wMel.fasta",
+    },
+    "dHisC_Cadillac_D4x_P4x" : {
+      "fasta" : "dHisC_Cadillac_D4x_P4x.fa"
+    },
+    "wild-type_array" : {
+      "fasta" : "wild-type_array.fasta"
+    }
+  }
+}
+```
+
 ## Required directory structure
 
 After cloning the repository, and placing your own `Default Genome` and `Reference Genome` in the `Project_Folder` directory, you should
@@ -206,6 +244,12 @@ You may copy or move your raw data folders into the `Project_Folder` directory.
    5. Alignment/*[SampleName]*_*[ReferenceGenome(s)]*.bam
    6. Alignment/*[SampleName]*_*[ReferenceGenome(s)]*.bam.bai
    7. Alignment/*[SampleName]*_queries.bed
+   
+   **Optional Alignment Outputs**
+   1. Alignment/*[ReferenceGenome]*.gff
+   2. Alignment/*[SampleName]*_*[singleArray]*.sam
+   3. Alignment/*[SampleName]*_*[singleArray]*.bam
+   4. Alignment/*[SampleName]*_*[singleArray]*.bam.bai
    
 
 2. **Stats files:** Stats about the sequencing and alignments.
